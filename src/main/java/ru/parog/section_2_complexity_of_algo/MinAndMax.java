@@ -14,8 +14,6 @@ public class MinAndMax {
 
     /**
      * Основная идея: используем парное сравнение. Внутри пары находим min и max.
-     * Далее обновляем глобальный минимум: globalMin ? pairLocalMin.
-     * Аналогично с глобальным максимумом: globalMax ? pairLocalMax.
      * Тогда получается 3 сравнения вместо 4 (если бы по отдельности проверять каждый элемент и на min, и на max).
      * В итоге выходит ровно 3(n/2) сравнений.
      *
@@ -26,23 +24,34 @@ public class MinAndMax {
         if (arr == null || arr.length == 0) return null;
         if (arr.length == 1) return new int[]{arr[0], arr[0]};
 
-        int globalMin = arr[0];
-        int globalMax = arr[0];
+        int globalMin, globalMax, startIndex;
 
-        for (int i = 1; i < arr.length; i += 2) {
-            int cur = arr[i - 1];
-            int next = arr[i];
-
-            int pairLocalMin = Math.min(cur, next);
-            int pairLocalMax = Math.max(cur, next);
-
-            globalMin = Math.min(pairLocalMin, globalMin);
-            globalMax = Math.max(pairLocalMax, globalMax);
+        if (arr.length % 2 == 0) {
+            if (arr[0] < arr[1]) {
+                globalMin = arr[0];
+                globalMax = arr[1];
+            } else {
+                globalMin = arr[1];
+                globalMax = arr[0];
+            }
+            startIndex = 2;
+        } else {
+            globalMin = arr[0];
+            globalMax = arr[0];
+            startIndex = 1;
         }
 
-        if (arr.length % 2 == 1) {
-            globalMin = Math.min(arr[arr.length - 1], globalMin);
-            globalMax = Math.max(arr[arr.length - 1], globalMax);
+        for (int i = startIndex; i < arr.length; i += 2) {
+            int cur = arr[i];
+            int next = arr[i + 1];
+
+            if (cur < next) {
+                if (cur < globalMin) globalMin = cur;
+                if (next > globalMax) globalMax = next;
+            } else {
+                if (next < globalMin) globalMin = next;
+                if (cur > globalMax) globalMax = next;
+            }
         }
 
         return new int[]{globalMin, globalMax};
